@@ -4,6 +4,10 @@
 namespace hdlc_parser {
 class SigWriter : public Writer {
  public:
-  void write(const char* filename, const frames_t& frames) override;
+  explicit SigWriter(const char* filename);
+  void write(const frames_t& frames) override;
+
+ private:
+  std::ofstream file_;
 };
 }  // namespace hdlc_parser
