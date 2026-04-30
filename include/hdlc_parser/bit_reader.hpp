@@ -9,17 +9,17 @@ class BitReader {
    public:
     BitReader();
 
-    void append(const char* data, std::size_t size);
+    void Append(const char* data, std::size_t size);
 
-    uint8_t readBit();
+    bool ReadBit(uint8_t& bit);
 
-    uint8_t peekBit() const;
+    bool PeekBit(uint8_t& bit) const;
 
     // Check if there are more bits to read
-    bool hasBit() const;
+    bool HasBit() const;
 
     // Reset all internal state (for testing or new file)
-    void reset();
+    void Reset();
 
    private:
     std::vector<uint8_t> buffer_;

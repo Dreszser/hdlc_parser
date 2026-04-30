@@ -5,18 +5,18 @@ namespace hdlc_parser {
 
 BitReader::BitReader() : byte_index_(0), bit_index_(0) {}
 
-void BitReader::append(const char* data, std::size_t size) {
+void BitReader::Append(const char* data, std::size_t size) {
     buffer_.reserve(buffer_.size() + size);
     buffer_.insert(buffer_.end(), data, data + size);
 }
 
-uint8_t BitReader::readBit() {
-    if (!hasBit()) {
-        throw std::runtime_error("BitReader: no more bits to read");
+bool BitReader::ReadBit(uint8_t& bit) {
+    if (!HasBit()) {
+        return false;
     }
 
     uint8_t byte = buffer_[byte_index_];
-    uint8_t bit = (byte >> (7 - bit_index_)) & 1;
+    bit = (byte >> (7 - bit_index_)) & 1;
 
     // Advance to next bit
     bit_index_++;
@@ -25,23 +25,23 @@ uint8_t BitReader::readBit() {
         byte_index_++;
     }
 
-    return bit;
+    return true;
 }
 
-uint8_t BitReader::peekBit() const {
-    if (!hasBit()) {
-        throw std::runtime_error("BitReader: no more bits to peek");
+bool BitReader::PeekBit(uint8_t& bit) const {
+    if (!HasBit()) {
+        return false;
     }
 
     uint8_t byte = buffer_[byte_index_];
-    uint8_t bit = (byte >> (7 - bit_index_)) & 1;
+    bit = (byte >> (7 - bit_index_)) & 1;
 
-    return bit;
+    return true;
 }
 
-bool BitReader::hasBit() const { return byte_index_ < buffer_.size(); }
+bool BitReader::HasBit() const { return byte_index_ < buffer_.size(); }
 
-void BitReader::reset() {
+void BitReader::Reset() {
     byte_index_ = 0;
     bit_index_ = 0;
 }

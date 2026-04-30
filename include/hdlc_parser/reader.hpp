@@ -13,17 +13,24 @@ class Reader {
     ReadResult read(const char* filename);
 
    private:
-    void process_chunk(const char* buffer, std::streamsize size,
-                       frames_t& frames);
+    /* void process_chunk(const char* buffer, std::streamsize size,
+                       frames_t& frames); */
 
     void parse_bits();
 
-    frame_t last_frame_begining_;
+    void start_new_frame();
+    void finish_frame();
+
+    frame_t current_frame_;
     uint32_t chunk_size_;
 
     BitReader bit_reader_;
 
-    uint8_t shift_;
-    bool in_frame_;
+    uint8_t ones_count_ = 0;
+
+    uint8_t current_byte_ = 0;
+
+    uint8_t shift_ = 0;
+    bool in_frame_ = false;
 };
 }  // namespace hdlc_parser
