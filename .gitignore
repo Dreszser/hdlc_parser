@@ -1,3 +1,5 @@
 build
 .clang-format
 .gitignore
+hdlc_test.bit
+aboba
