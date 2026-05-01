@@ -10,18 +10,16 @@ Reader::ReadResult Reader::read(const char* filename) {
     if (!file.is_open()) {
         return ReadResult::FileNotFound;
     }
-    char* buffer = new char[chunk_size_];
+    std::vector<char> buffer(chunk_size_);
     /* while (file.read(buffer, chunk_size_)) {
         bit_reader_.Append(buffer, file.gcount());
         parse_bits();
     } */
     for (int i = 0; i < 5; ++i) {
-        file.read(buffer, chunk_size_);
-        bit_reader_.Append(buffer, file.gcount());
+        file.read(buffer.data(), chunk_size_);
+        bit_reader_.Append(buffer.data(), file.gcount());
         parse_bits();
     }
-
-    delete[] buffer;
     return ReadResult::Success;
 }
 
@@ -111,6 +109,7 @@ void Reader::handle_flag() {
     shift_ = 0;
 }
 
+// true if bit is stuffed and should be ignored, false otherwise
 bool Reader::handle_bit_stuffing(uint8_t bit) {
     if (ones_count_ == 5 && bit == 0) {
         ones_count_ = 0;

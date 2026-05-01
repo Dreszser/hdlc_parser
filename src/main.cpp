@@ -1,5 +1,4 @@
 #include <chrono>
-
 #include <hdlc_parser/app.hpp>
 #include <iostream>
 
@@ -13,6 +12,6 @@ int main() {
 
     auto duration = duration_cast<microseconds>(stop - start);
     std::cout << duration.count() << std::endl;
-    
+
     return 0;
 }
