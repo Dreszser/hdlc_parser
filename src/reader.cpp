@@ -2,6 +2,7 @@
 #include <hdlc_parser/queue.hpp>
 #include <hdlc_parser/reader.hpp>
 #include <hdlc_parser/utility/crc_calculator.hpp>
+#include <iostream>
 
 namespace hdlc_parser {
 
@@ -70,11 +71,15 @@ void Reader::finish_frame() {
                 FrameQueue::getInstance().push(std::move(valid_frames_));
                 valid_frames_.clear();
             }
-        } /* else {
-            std::printf("CRC mismatch\n");
-            std::printf("Calculated CRC: %04X\n", calculated_crc);
-            std::printf("Received CRC: %04X\n", recieved_crc);
-        } */
+        } else {
+            std::cout << "CRC mismatch\n";
+            std::cout << "Calculated CRC: " << std::uppercase << std::hex
+                      << std::setw(4) << calculated_crc << "\n";
+            std::cout << "Recieved CRC: " << std::uppercase << std::hex
+                      << std::setw(4) << recieved_crc << "\n";
+            // std::printf("Calculated CRC: %04X\n", calculated_crc);
+            // std::printf("Received CRC: %04X\n", recieved_crc);
+        }
     }
     current_frame_.clear();
 }

@@ -8,6 +8,8 @@ class PcapWriter : public Writer {
     explicit PcapWriter(const char* filename);
     void write(const frames_t& frames) override;
 
+    ~PcapWriter();
+
    private:
     void write_global_header();
     void write_frame(const frame_t& frame);

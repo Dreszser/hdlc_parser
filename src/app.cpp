@@ -34,7 +34,6 @@ void writer_cb(const std::string& filename,
         }
     }
 
-    PcapWriter sig_writer(filename.data());
     while (true) {
         frames_t frames;
         if (!FrameQueue::getInstance().pop(frames)) {
@@ -45,7 +44,10 @@ void writer_cb(const std::string& filename,
         if (frames.empty()) {
             break;
         }
-        sig_writer.write(frames);
+
+        for (const auto& writer : writers) {
+            writer->write(frames);
+        }
     }
 }
 
