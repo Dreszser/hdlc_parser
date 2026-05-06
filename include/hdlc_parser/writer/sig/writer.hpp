@@ -8,6 +8,8 @@ class SigWriter : public Writer {
     explicit SigWriter(const char* filename);
     void write(const frames_t& frames) override;
 
+    ~SigWriter();
+
    private:
     std::ofstream file_;
 };

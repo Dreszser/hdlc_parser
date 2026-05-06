@@ -1,6 +1,7 @@
+#include <fstream>
+#include <hdlc_parser/queue.hpp>
 #include <hdlc_parser/reader.hpp>
 #include <hdlc_parser/utility/crc_calculator.hpp>
-#include <fstream>
 
 namespace hdlc_parser {
 
@@ -15,6 +16,10 @@ Reader::ReadResult Reader::read(const char* filename) {
     while (file.read(buffer.data(), chunk_size_)) {
         bit_reader_.Append(buffer.data(), file.gcount());
         parse_bits();
+    }
+    file.close();
+    if (valid_frames_.size() > 0) {
+        FrameQueue::getInstance().push(std::move(valid_frames_));
     }
     return ReadResult::Success;
 }
@@ -52,18 +57,24 @@ void Reader::parse_bits() {
 
 void Reader::finish_frame() {
     if (current_frame_.size() >= 4) {
-        uint16_t recieved_crc = (static_cast<uint16_t>(current_frame_[current_frame_.size() - 2]) << 8) | 
-                                 current_frame_[current_frame_.size() - 1];
-        uint16_t calculated_crc = CRCalculator::calculate(current_frame_.data(), current_frame_.size() - 2);
+        uint16_t recieved_crc =
+            (static_cast<uint16_t>(current_frame_[current_frame_.size() - 2])
+             << 8) |
+            current_frame_[current_frame_.size() - 1];
+        uint16_t calculated_crc = CRCalculator::calculate(
+            current_frame_.data(), current_frame_.size() - 2);
 
         if (recieved_crc == calculated_crc) {
-            // std::printf("Frame received successfully with CRC: %04X\n", recieved_crc);
-            // TODO: remove later, change to write to file
-        } else {
+            valid_frames_.push_back(std::move(current_frame_));
+            if (valid_frames_.size() == FRAMES_TO_PUSH_COUNT) {
+                FrameQueue::getInstance().push(std::move(valid_frames_));
+                valid_frames_.clear();
+            }
+        } /* else {
             std::printf("CRC mismatch\n");
             std::printf("Calculated CRC: %04X\n", calculated_crc);
             std::printf("Received CRC: %04X\n", recieved_crc);
-        }
+        } */
     }
     current_frame_.clear();
 }
@@ -97,5 +108,7 @@ void Reader::reset_frame_state() {
     current_byte_ = 0;
 }
 
+/* pushing terminal sequence */
+Reader::~Reader() { FrameQueue::getInstance().push({}); }
 
 }  // namespace hdlc_parser

@@ -5,6 +5,8 @@
 namespace hdlc_parser {
 
 class Reader {
+    constexpr static uint8_t FRAMES_TO_PUSH_COUNT = 10;
+
    public:
     enum class ReadResult { Success, FileNotFound, ReadError };
 
@@ -12,20 +14,17 @@ class Reader {
 
     ReadResult read(const char* filename);
 
+    ~Reader();
+
    private:
     void parse_bits();
 
     void finish_frame();
     void reset_frame_state();
-    void reset_bit_accumulator();
 
     void handle_abort();
     void handle_flag();
-    bool handle_bit_stuffing(uint8_t bit);
     void accumulate_bit(uint8_t bit);
-
-    uint16_t extract_crc(size_t frame_bits_count);
-    uint16_t calculate_crc(size_t frame_bits_count);
 
     frame_t current_frame_;
     uint32_t chunk_size_;
@@ -39,9 +38,7 @@ class Reader {
 
     bool in_frame_ = false;
 
-    // TODO: remove later, just for debugging
-    static void dump_hex(const frame_t& data, size_t payload_bits);
-    static uint16_t reverse_16(uint16_t x);
+    frames_t valid_frames_;
 };
 
 }  // namespace hdlc_parser

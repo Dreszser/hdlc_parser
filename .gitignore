@@ -4,3 +4,6 @@ build
 hdlc_test.bit
 aboba
 .vscode
+output.bin
+output.pcap
+output.sig

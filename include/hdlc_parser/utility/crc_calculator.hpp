@@ -1,20 +1,18 @@
 #pragma once
 #include <array>
 
-namespace hdlc_parser
-{
+namespace hdlc_parser {
 
-class CRCalculator
-{
+class CRCalculator {
     constexpr static uint16_t polynomial_ = 0x1021;
 
-public:
+   public:
     static void init();
 
     static uint16_t calculate(const uint8_t* data, size_t length);
 
-private:
+   private:
     static std::array<uint16_t, 256> table_;
 };
 
-}
+}  // namespace hdlc_parser
