@@ -15,7 +15,9 @@ Reader::ReadResult Reader::read(const char* filename) {
     }
     std::vector<char> buffer(chunk_size_);
     while (file.read(buffer.data(), chunk_size_)) {
-        bit_reader_.Append(buffer.data(), file.gcount());
+        size_t n = file.gcount();
+        bit_reader_.SetBuffer(buffer.data(), n);
+        file_byte_index_ += n;
         parse_bits();
     }
     file.close();
@@ -29,7 +31,6 @@ void Reader::parse_bits() {
     uint8_t bit;
 
     uint8_t shift = 0;
-    int i = 0;
     while (bit_reader_.ReadBit(bit)) {
         shift = (shift << 1) | bit;
 
@@ -51,9 +52,7 @@ void Reader::parse_bits() {
         } else if (in_frame_) {
             accumulate_bit(bit);
         }
-        ++i;
     }
-    (void)i;
 }
 
 void Reader::finish_frame() {
@@ -72,7 +71,9 @@ void Reader::finish_frame() {
                 valid_frames_.clear();
             }
         } else {
-            std::cout << "CRC mismatch\n";
+            std::cout << "CRC mismatch in frame from byte " << std::uppercase
+                      << std::hex << std::setw(4) << frame_start_byte_index_
+                      << "\n";
             std::cout << "Calculated CRC: " << std::uppercase << std::hex
                       << std::setw(4) << calculated_crc << "\n";
             std::cout << "Recieved CRC: " << std::uppercase << std::hex
@@ -96,6 +97,9 @@ void Reader::handle_flag() {
         reset_frame_state();
     }
     in_frame_ = true;
+
+    frame_start_byte_index_ =
+        file_byte_index_ - bit_reader_.RemainingBytesInBuffer();
 }
 
 void Reader::accumulate_bit(uint8_t bit) {

@@ -32,15 +32,15 @@ int main(int argc, char** argv) {
     }
     hdlc_parser::App app;
 
-    std::cout << "\n\n------- Execution started -------" << std::endl;
+    std::cout << "\n------- Execution started -------\n" << std::endl;
     auto start = high_resolution_clock::now();
     app.start(cfg);
     auto stop = high_resolution_clock::now();
     std::cout << "\n\n------- Execution ended -------" << std::endl;
 
-    auto duration = duration_cast<microseconds>(stop - start);
+    auto duration = duration_cast<milliseconds>(stop - start);
 
-    std::cout << "\n\nExecution time: " << duration.count() << "ms"
+    std::cout << "\n\nExecution time: " << std::dec << duration.count() << "ms\n"
               << std::endl;
 
     return 0;

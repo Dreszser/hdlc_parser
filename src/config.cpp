@@ -47,7 +47,7 @@ const char* to_string(Config::OutputFormat f) {
     return "unknown";
 }
 
-static void get_value(int argc, char** argv, int i, const std::string& arg,
+static void get_value(int argc, char** argv, int& i, const std::string& arg,
                       std::string& out) {
     if (i + 1 >= argc) {
         throw std::runtime_error("Missing value for " + arg);
@@ -65,7 +65,7 @@ Config parse_args(int argc, char** argv) {
             get_value(argc, argv, i, arg, cfg.input_file);
         } else if (arg == "--output-file") {
             get_value(argc, argv, i, arg, cfg.output_file);
-        } else if (arg == "--output_format") {
+        } else if (arg == "--output-format") {
             std::string val;
             get_value(argc, argv, i, arg, val);
             cfg.output_format = parse_format(val);

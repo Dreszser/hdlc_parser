@@ -39,6 +39,9 @@ class Reader {
     bool in_frame_ = false;
 
     frames_t valid_frames_;
+
+    size_t file_byte_index_ = 0;
+    size_t frame_start_byte_index_ = 0;
 };
 
 }  // namespace hdlc_parser
