@@ -15,15 +15,17 @@ class Reader {
    private:
     void parse_bits();
 
-    void start_new_frame();
     void finish_frame();
-    void reset_bit_state();
+    void reset_frame_state();
     void reset_bit_accumulator();
 
     void handle_abort();
     void handle_flag();
     bool handle_bit_stuffing(uint8_t bit);
     void accumulate_bit(uint8_t bit);
+
+    uint16_t extract_crc(size_t frame_bits_count);
+    uint16_t calculate_crc(size_t frame_bits_count);
 
     frame_t current_frame_;
     uint32_t chunk_size_;
@@ -35,11 +37,11 @@ class Reader {
     uint8_t current_byte_ = 0;
     uint8_t bit_count_ = 0;
 
-    uint8_t shift_ = 0;
     bool in_frame_ = false;
 
     // TODO: remove later, just for debugging
     static void dump_hex(const frame_t& data, size_t payload_bits);
+    static uint16_t reverse_16(uint16_t x);
 };
 
 }  // namespace hdlc_parser

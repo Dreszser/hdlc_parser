@@ -3,3 +3,4 @@ build
 .gitignore
 hdlc_test.bit
 aboba
+.vscode

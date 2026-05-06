@@ -3,8 +3,6 @@
 
 namespace hdlc_parser {
 
-BitReader::BitReader() : byte_index_(0), bit_index_(0) {}
-
 void BitReader::Append(const char* data, std::size_t size) {
     buffer_.reserve(buffer_.size() + size);
     buffer_.insert(buffer_.end(), data, data + size);
@@ -16,9 +14,8 @@ bool BitReader::ReadBit(uint8_t& bit) {
     }
 
     uint8_t byte = buffer_[byte_index_];
-    bit = (byte >> (7 - bit_index_)) & 1;
+    bit = (byte >> bit_index_) & 1;
 
-    // Advance to next bit
     bit_index_++;
     if (bit_index_ >= 8) {
         bit_index_ = 0;
@@ -28,22 +25,12 @@ bool BitReader::ReadBit(uint8_t& bit) {
     return true;
 }
 
-bool BitReader::PeekBit(uint8_t& bit) const {
-    if (!HasBit()) {
-        return false;
-    }
-
-    uint8_t byte = buffer_[byte_index_];
-    bit = (byte >> (7 - bit_index_)) & 1;
-
-    return true;
-}
-
 bool BitReader::HasBit() const { return byte_index_ < buffer_.size(); }
 
 void BitReader::Reset() {
     byte_index_ = 0;
     bit_index_ = 0;
+    buffer_.clear();
 }
 
 }  // namespace hdlc_parser

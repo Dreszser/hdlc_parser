@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 4.1)
 project(hdlc_parser)
 
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror")
+
 add_executable(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
@@ -11,6 +13,7 @@ target_sources(${PROJECT_NAME}
         src/reader.cpp
         src/writer/sig/writer.cpp
         src/writer/pcap/writer.cpp
+        src/utility/crc_calculator.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

@@ -6,14 +6,12 @@
 namespace hdlc_parser {
 
 class BitReader {
-   public:
-    BitReader();
+public:
+    BitReader() = default;
 
     void Append(const char* data, std::size_t size);
 
     bool ReadBit(uint8_t& bit);
-
-    bool PeekBit(uint8_t& bit) const;
 
     // Check if there are more bits to read
     bool HasBit() const;
@@ -21,10 +19,10 @@ class BitReader {
     // Reset all internal state (for testing or new file)
     void Reset();
 
-   private:
+private:
     std::vector<uint8_t> buffer_;
-    std::size_t byte_index_;  // Current byte position
-    uint8_t bit_index_;  // Current bit within the byte (0-7, where 0 = MSB)
+    std::size_t byte_index_ = 0;  // Current byte position
+    uint8_t bit_index_ = 0;  // Current bit within the byte (0-7, where 0 = MSB)
 };
 
 }  // namespace hdlc_parser
