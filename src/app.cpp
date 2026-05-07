@@ -85,9 +85,12 @@ void writer_cb(const Config& cfg) {
 
 void App::start(const Config& config) {
     CRCalculator::init();
-    std::jthread reader_thread(reader_cb, config.input_file,
-                               config.read_chunk_size);
+    std::thread reader_thread(reader_cb, config.input_file,
+                              config.read_chunk_size);
 
-    std::jthread writer_thread(writer_cb, config);
+    std::thread writer_thread(writer_cb, config);
+
+    reader_thread.join();
+    writer_thread.join();
 }
 }  // namespace hdlc_parser

@@ -1,7 +1,11 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.5)
 project(hdlc_parser)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -std=c++20")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX /std:c++17")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -std=c++17")
+endif()
 
 add_executable(${PROJECT_NAME})
 

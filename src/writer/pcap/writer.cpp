@@ -17,13 +17,16 @@ void PcapWriter::write_global_header() {
 
 void PcapWriter::write_frame(const frame_t& frame) {
     auto now = std::chrono::system_clock::now();
-    auto sec = std::chrono::time_point_cast<std::chrono::seconds>(now);
-    auto usec =
-        std::chrono::duration_cast<std::chrono::microseconds>(now - sec);
 
     PcapPacketHeader ph{};
-    ph.ts_sec = sec.time_since_epoch().count();
-    ph.ts_usec = usec.count();
+    ph.ts_sec = static_cast<uint32_t>(
+        std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch())
+            .count());
+    ph.ts_usec = static_cast<uint32_t>(
+        std::chrono::duration_cast<std::chrono::microseconds>(
+            now.time_since_epoch())
+            .count() %
+        1000000);
     ph.incl_len = frame.size();
     ph.orig_len = frame.size();
 

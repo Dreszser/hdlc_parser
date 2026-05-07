@@ -2,7 +2,9 @@
 #include <hdlc_parser/queue.hpp>
 #include <hdlc_parser/reader.hpp>
 #include <hdlc_parser/utility/crc_calculator.hpp>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 
 namespace hdlc_parser {
 
@@ -24,8 +26,8 @@ Reader::ReadResult Reader::read(const char* filename) {
     if (valid_frames_.size() > 0) {
         FrameQueue::getInstance().push(std::move(valid_frames_));
     }
-    std::cout << std::format("Total valid frames parsed from {}: {}", filename,
-                             total_valid_frames_count_);
+    std::cout << "Total valid frames parsed from " << filename << ": "
+              << total_valid_frames_count_;
     return ReadResult::Success;
 }
 
@@ -79,10 +81,14 @@ void Reader::finish_frame() {
 
 void Reader::log_mismatch_crc_frame(const uint16_t& calculated_crc,
                                     const uint16_t& recieved_crc) {
-    std::cout << std::format("CRC mismatch in frame from byte {:04X}\n",
-                             frame_start_byte_index_);
-    std::cout << std::format("Calculated CRC: {:04X}\n", calculated_crc);
-    std::cout << std::format("Recieved CRC: {:04X}\n", recieved_crc);
+    std::stringstream ss;
+    ss << "CRC mismatch in frame from byte " << std::setw(4)
+       << std::setfill('0') << std::hex << frame_start_byte_index_
+       << "\nCalculated CRC: " << std::setw(4) << std::setfill('0') << std::hex
+       << calculated_crc << "\nRecieved CRC: " << std::setw(4)
+       << std::setfill('0') << std::hex << recieved_crc << "\n";
+
+    std::cout << ss.str();
 }
 
 void Reader::handle_abort() {
