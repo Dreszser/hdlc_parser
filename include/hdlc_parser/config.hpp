@@ -11,7 +11,7 @@ struct Config {
 
     enum class OutputFormat { NONE, SIG, PCAP, BOTH } output_format;
 
-    uint32_t read_chunk_size = 0;
+    size_t read_chunk_size = 0;
 };
 
 size_t parse_size(const std::string& s);
@@ -21,7 +21,5 @@ Config::OutputFormat compute_format(const Config& cfg);
 const char* to_string(Config::OutputFormat f);
 
 Config parse_args(int argc, char** argv);
-
-void print_usage();
 
 }  // namespace hdlc_parser

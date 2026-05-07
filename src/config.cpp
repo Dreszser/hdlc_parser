@@ -1,4 +1,5 @@
 #include <hdlc_parser/config.hpp>
+#include <stdexcept>
 
 namespace hdlc_parser {
 
