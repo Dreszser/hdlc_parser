@@ -27,7 +27,7 @@ class Reader {
     void accumulate_bit(uint8_t bit);
 
     void log_mismatch_crc_frame(const uint16_t& calculated_crc,
-                                const uint16_t& recieved_crc);    
+                                const uint16_t& recieved_crc);
 
     frame_t current_frame_;
     uint32_t chunk_size_;
