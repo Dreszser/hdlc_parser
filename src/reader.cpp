@@ -11,6 +11,7 @@ Reader::Reader(uint32_t chunk_size) : chunk_size_(chunk_size), bit_reader_() {}
 Reader::ReadResult Reader::read(const char* filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
+        std::cout << "Error opening file: " << filename;
         return ReadResult::FileNotFound;
     }
     std::vector<char> buffer(chunk_size_);
@@ -20,10 +21,11 @@ Reader::ReadResult Reader::read(const char* filename) {
         file_byte_index_ += n;
         parse_bits();
     }
-    file.close();
     if (valid_frames_.size() > 0) {
         FrameQueue::getInstance().push(std::move(valid_frames_));
     }
+    std::cout << std::format("Total valid frames parsed: {}",
+                             total_valid_frames_count_);
     return ReadResult::Success;
 }
 
@@ -62,22 +64,25 @@ void Reader::finish_frame() {
             current_frame_.data(), current_frame_.size() - 2);
 
         if (recieved_crc == calculated_crc) {
+            ++total_valid_frames_count_;
             valid_frames_.push_back(std::move(current_frame_));
             if (valid_frames_.size() == FRAMES_TO_PUSH_COUNT) {
                 FrameQueue::getInstance().push(std::move(valid_frames_));
                 valid_frames_.clear();
             }
         } else {
-            std::cout << "CRC mismatch in frame from byte " << std::uppercase
-                      << std::hex << std::setw(4) << frame_start_byte_index_
-                      << "\n";
-            std::cout << "Calculated CRC: " << std::uppercase << std::hex
-                      << std::setw(4) << calculated_crc << "\n";
-            std::cout << "Recieved CRC: " << std::uppercase << std::hex
-                      << std::setw(4) << recieved_crc << "\n";
+            log_mismatch_crc_frame(calculated_crc, recieved_crc);
         }
     }
     current_frame_.clear();
+}
+
+void Reader::log_mismatch_crc_frame(const uint16_t& calculated_crc,
+                                    const uint16_t& recieved_crc) {
+    std::cout << std::format("CRC mismatch in frame from byte {:04X}\n",
+                             frame_start_byte_index_);
+    std::cout << std::format("Calculated CRC: {:04X}\n", calculated_crc);
+    std::cout << std::format("Recieved CRC: {:04X}\n", recieved_crc);
 }
 
 void Reader::handle_abort() {

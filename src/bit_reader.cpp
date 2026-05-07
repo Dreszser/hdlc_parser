@@ -6,7 +6,7 @@ void BitReader::SetBuffer(const char* data, size_t size) {
     buffer_ = data;
     buffer_size_ = size;
     byte_index_ = 0;
-    // bit_index_ = 0;
+    bit_index_ = 0;
 }
 
 bool BitReader::ReadBit(uint8_t& bit) {

@@ -8,7 +8,7 @@ class SigWriter : public Writer {
     explicit SigWriter(const char* filename);
     void write(const frames_t& frames) override;
 
-    ~SigWriter();
+    ~SigWriter() = default;
 
    private:
     std::ofstream file_;

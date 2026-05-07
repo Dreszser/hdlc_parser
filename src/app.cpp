@@ -15,23 +15,28 @@ void reader_cb(const std::string& filename, uint32_t chunk_size) {
     reader.read(filename.data());
 }
 
-void writer_cb(const std::string& filename,
-               Config::OutputFormat output_format) {
+void writer_cb(const Config& cfg) {
     std::vector<std::unique_ptr<Writer>> writers;
-    switch (output_format) {
+    switch (cfg.output_format) {
         case Config::OutputFormat::PCAP: {
-            writers.emplace_back(std::make_unique<PcapWriter>(filename.data()));
+            writers.emplace_back(
+                std::make_unique<PcapWriter>(cfg.output_file_pcap.data()));
             break;
         }
         case Config::OutputFormat::SIG: {
-            writers.emplace_back(std::make_unique<SigWriter>(filename.data()));
+            writers.emplace_back(
+                std::make_unique<SigWriter>(cfg.output_file_sig.data()));
             break;
         }
         case Config::OutputFormat::BOTH: {
-            writers.emplace_back(std::make_unique<PcapWriter>(filename.data()));
-            writers.emplace_back(std::make_unique<SigWriter>(filename.data()));
+            writers.emplace_back(
+                std::make_unique<PcapWriter>(cfg.output_file_pcap.data()));
+            writers.emplace_back(
+                std::make_unique<SigWriter>(cfg.output_file_sig.data()));
             break;
         }
+        default:
+            break;
     }
 
     while (true) {
@@ -56,7 +61,6 @@ void App::start(const Config& config) {
     std::jthread reader_thread(reader_cb, config.input_file,
                                config.read_chunk_size);
 
-    std::jthread writer_thread(writer_cb, config.output_file,
-                               config.output_format);
+    std::jthread writer_thread(writer_cb, config);
 }
 }  // namespace hdlc_parser

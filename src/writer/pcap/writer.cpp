@@ -37,6 +37,4 @@ void PcapWriter::write(const frames_t& frames) {
     }
 }
 
-PcapWriter::~PcapWriter() { file_.close(); }
-
 }  // namespace hdlc_parser

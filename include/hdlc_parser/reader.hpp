@@ -26,6 +26,9 @@ class Reader {
     void handle_flag();
     void accumulate_bit(uint8_t bit);
 
+    void log_mismatch_crc_frame(const uint16_t& calculated_crc,
+                                const uint16_t& recieved_crc);    
+
     frame_t current_frame_;
     uint32_t chunk_size_;
 
@@ -44,6 +47,8 @@ class Reader {
     size_t frame_start_byte_index_ = 0;
 
     uint8_t shift_ = 0;
+
+    size_t total_valid_frames_count_ = 0;
 
     /* debug helper */
     void dump_hex(const frame_t& data);
