@@ -10,6 +10,8 @@ class SigWriter : public Writer {
 
     ~SigWriter() = default;
 
+    bool is_open() const;
+
    private:
     std::ofstream file_;
 };

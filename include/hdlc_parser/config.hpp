@@ -22,4 +22,6 @@ const char* to_string(Config::OutputFormat f);
 
 Config parse_args(int argc, char** argv);
 
+void print_usage();
+
 }  // namespace hdlc_parser

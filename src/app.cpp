@@ -4,6 +4,7 @@
 #include <hdlc_parser/utility/crc_calculator.hpp>
 #include <hdlc_parser/writer/pcap/writer.hpp>
 #include <hdlc_parser/writer/sig/writer.hpp>
+#include <iostream>
 #include <memory>
 #include <thread>
 #include <vector>
@@ -19,20 +20,46 @@ void writer_cb(const Config& cfg) {
     std::vector<std::unique_ptr<Writer>> writers;
     switch (cfg.output_format) {
         case Config::OutputFormat::PCAP: {
-            writers.emplace_back(
-                std::make_unique<PcapWriter>(cfg.output_file_pcap.data()));
+            auto writer =
+                std::make_unique<PcapWriter>(cfg.output_file_pcap.data());
+            if (!writer->is_open()) {
+                std::cout << "Failed to open PCAP output file: "
+                          << cfg.output_file_pcap << "\n";
+                return;
+            }
+            writers.emplace_back(std::move(writer));
             break;
         }
         case Config::OutputFormat::SIG: {
-            writers.emplace_back(
-                std::make_unique<SigWriter>(cfg.output_file_sig.data()));
+            auto writer =
+                std::make_unique<SigWriter>(cfg.output_file_sig.data());
+            if (!writer->is_open()) {
+                std::cout << "Failed to open SIG output file: "
+                          << cfg.output_file_sig << "\n";
+                return;
+            }
+            writers.emplace_back(std::move(writer));
+
             break;
         }
         case Config::OutputFormat::BOTH: {
-            writers.emplace_back(
-                std::make_unique<PcapWriter>(cfg.output_file_pcap.data()));
-            writers.emplace_back(
-                std::make_unique<SigWriter>(cfg.output_file_sig.data()));
+            auto pcap_writer =
+                std::make_unique<PcapWriter>(cfg.output_file_pcap.data());
+            if (!pcap_writer->is_open()) {
+                std::cout << "Failed to open PCAP output file: "
+                          << cfg.output_file_pcap << "\n";
+                return;
+            }
+            writers.emplace_back(std::move(pcap_writer));
+
+            auto sig_writer =
+                std::make_unique<SigWriter>(cfg.output_file_sig.data());
+            if (!sig_writer->is_open()) {
+                std::cout << "Failed to open SIG output file: "
+                          << cfg.output_file_sig << "\n";
+                return;
+            }
+            writers.emplace_back(std::move(sig_writer));
             break;
         }
         default:

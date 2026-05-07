@@ -11,7 +11,7 @@ Reader::Reader(uint32_t chunk_size) : chunk_size_(chunk_size), bit_reader_() {}
 Reader::ReadResult Reader::read(const char* filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
-        std::cout << "Error opening file: " << filename;
+        std::cout << "Error opening input file: " << filename;
         return ReadResult::FileNotFound;
     }
     std::vector<char> buffer(chunk_size_);
@@ -24,7 +24,7 @@ Reader::ReadResult Reader::read(const char* filename) {
     if (valid_frames_.size() > 0) {
         FrameQueue::getInstance().push(std::move(valid_frames_));
     }
-    std::cout << std::format("Total valid frames parsed: {}",
+    std::cout << std::format("Total valid frames parsed from {}: {}", filename,
                              total_valid_frames_count_);
     return ReadResult::Success;
 }

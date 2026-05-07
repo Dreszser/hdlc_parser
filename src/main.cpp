@@ -10,17 +10,18 @@ int main(int argc, char** argv) {
     try {
         cfg = hdlc_parser::parse_args(argc, argv);
 
+        cfg.output_format = hdlc_parser::compute_format(cfg);
+        if (cfg.output_format == hdlc_parser::Config::OutputFormat::NONE) {
+            throw std::runtime_error(
+                "No output format specified. Use --output-sig and/or "
+                "--output-pcap");
+        }
+
         if (cfg.input_file.empty()) {
             cfg.input_file = "input.bin";
         }
-        if (cfg.output_file_sig.empty() && cfg.output_file_pcap.empty()) {
-            cfg.output_file_sig = "output.sig";
-        }
         if (cfg.read_chunk_size == 0) {
             cfg.read_chunk_size = 1024;
-        }
-        if (cfg.output_format == hdlc_parser::Config::OutputFormat::NONE) {
-            cfg.output_format = hdlc_parser::Config::OutputFormat::SIG;
         }
 
         std::cout << "----- Parser configuration ------\n\n";
@@ -35,7 +36,6 @@ int main(int argc, char** argv) {
                                                    : cfg.output_file_pcap)
                   << "\n";
         std::cout << "chunk: " << cfg.read_chunk_size << "b\n";
-
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;

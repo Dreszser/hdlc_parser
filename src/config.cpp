@@ -44,18 +44,25 @@ static void get_value(int argc, char** argv, int& i, const std::string& arg,
     }
     out = argv[++i];
 }
+
 Config::OutputFormat compute_format(const Config& cfg) {
     bool sig = !cfg.output_file_sig.empty();
     bool pcap = !cfg.output_file_pcap.empty();
 
-    if (sig && pcap) return Config::OutputFormat::BOTH;
-    if (sig) return Config::OutputFormat::SIG;
-    if (pcap) return Config::OutputFormat::PCAP;
+    if (sig && pcap) {
+        return Config::OutputFormat::BOTH;
+    }
+    if (sig) {
+        return Config::OutputFormat::SIG;
+    }
+    if (pcap) {
+        return Config::OutputFormat::PCAP;
+    }
     return Config::OutputFormat::NONE;
 }
 
 Config parse_args(int argc, char** argv) {
-    Config cfg{};
+    Config cfg;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -65,14 +72,12 @@ Config parse_args(int argc, char** argv) {
         } else if (arg == "--output-sig") {
             if (cfg.output_file_sig.empty()) {
                 get_value(argc, argv, i, arg, cfg.output_file_sig);
-                cfg.output_format = compute_format(cfg);
             } else {
                 throw std::runtime_error("SIG output file already declared");
             }
         } else if (arg == "--output-pcap") {
             if (cfg.output_file_pcap.empty()) {
                 get_value(argc, argv, i, arg, cfg.output_file_pcap);
-                cfg.output_format = compute_format(cfg);
             } else {
                 throw std::runtime_error("PCAP output file already declared");
             }

@@ -10,6 +10,8 @@ class PcapWriter : public Writer {
 
     ~PcapWriter() = default;
 
+    bool is_open() const;
+
    private:
     void write_global_header();
     void write_frame(const frame_t& frame);

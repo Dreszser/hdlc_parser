@@ -17,4 +17,6 @@ void SigWriter::write(const frames_t& frames) {
     }
 }
 
+bool SigWriter::is_open() const { return file_.is_open(); }
+
 }  // namespace hdlc_parser
