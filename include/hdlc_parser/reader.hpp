@@ -29,6 +29,9 @@ class Reader {
     void log_mismatch_crc_frame(const uint16_t& calculated_crc,
                                 const uint16_t& recieved_crc);
 
+    inline uint8_t reverse_bits(uint8_t b);
+    void reverse_bits_in_frame(frame_t& frame);
+
     frame_t current_frame_;
     uint32_t chunk_size_;
 

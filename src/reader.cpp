@@ -67,6 +67,7 @@ void Reader::finish_frame() {
 
         if (recieved_crc == calculated_crc) {
             ++total_valid_frames_count_;
+            reverse_bits_in_frame(current_frame_);
             valid_frames_.push_back(std::move(current_frame_));
             if (valid_frames_.size() == FRAMES_TO_PUSH_COUNT) {
                 FrameQueue::getInstance().push(std::move(valid_frames_));
@@ -123,6 +124,19 @@ void Reader::accumulate_bit(uint8_t bit) {
 void Reader::reset_frame_state() {
     bit_count_ = 0;
     current_byte_ = 0;
+}
+
+inline uint8_t Reader::reverse_bits(uint8_t b) {
+    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    return b;
+}
+
+void Reader::reverse_bits_in_frame(frame_t& frame) {
+    for (auto& b : frame) {
+        b = reverse_bits(b);
+    }
 }
 
 /* pushing terminal sequence */

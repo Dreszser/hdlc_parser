@@ -27,11 +27,11 @@ void PcapWriter::write_frame(const frame_t& frame) {
             now.time_since_epoch())
             .count() %
         1000000);
-    ph.incl_len = frame.size();
-    ph.orig_len = frame.size();
+    ph.incl_len = frame.size() - 2;
+    ph.orig_len = frame.size() - 2;
 
     file_.write(reinterpret_cast<char*>(&ph), sizeof(ph));
-    file_.write(reinterpret_cast<const char*>(frame.data()), frame.size());
+    file_.write(reinterpret_cast<const char*>(frame.data()), frame.size() - 2);
 }
 
 void PcapWriter::write(const frames_t& frames) {
