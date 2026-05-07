@@ -22,12 +22,12 @@ make
 ### Options
 
 
-| Option                     | Description                                                          | Default     |
-| -------------------------- | -------------------------------------------------------------------- | ----------- |
-| `--input-file <path>`      | Input binary filepath                                                | input.bin   |
-| `--output-sig <path>`      | Output SIG format filepath                                           | output.sig  |
-| `--output-pcap <path>`     | Output PCAP format file                                              | output.pcap |
-| `--read-chunk-size <size>` | Chunk size (allowed postfixes - `b`, `kb`, example - `1024b`, `4kb`) | 1024b       |
+| Option                     | Description                                                          | Default   |
+| -------------------------- | -------------------------------------------------------------------- | --------- |
+| `--input-file <path>`      | Input binary filepath                                                | input.bin |
+| `--output-sig <path>`      | Output SIG format filepath                                           |           |
+| `--output-pcap <path>`     | Output PCAP format file                                              |           |
+| `--read-chunk-size <size>` | Chunk size (allowed postfixes - `b`, `kb`, example - `1024b`, `4kb`) | 1024b     |
 
 ### Examples
 
