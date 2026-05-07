@@ -42,6 +42,11 @@ class Reader {
 
     size_t file_byte_index_ = 0;
     size_t frame_start_byte_index_ = 0;
+
+    uint8_t shift_ = 0;
+
+    /* debug helper */
+    void dump_hex(const frame_t& data);
 };
 
 }  // namespace hdlc_parser

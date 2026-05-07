@@ -30,26 +30,23 @@ Reader::ReadResult Reader::read(const char* filename) {
 void Reader::parse_bits() {
     uint8_t bit;
 
-    uint8_t shift = 0;
     while (bit_reader_.ReadBit(bit)) {
-        shift = (shift << 1) | bit;
+        shift_ = (shift_ << 1) | bit;
 
-        if (bit == 1) {
-            ones_count_++;
-            if (in_frame_ && ones_count_ > 6) {
-                handle_abort();
-            }
-        } else {
-            if (ones_count_ == 5) {
-                ones_count_ = 0;
-                continue;
-            }
-            ones_count_ = 0;
-        }
-
-        if (shift == 0x7E) {
+        if (in_frame_ && ones_count_ > 6) {
+            handle_abort();
+        } else if (shift_ == 0x7E) {
             handle_flag();
         } else if (in_frame_) {
+            if (bit == 1) {
+                ones_count_++;
+            } else {
+                if (ones_count_ == 5) {
+                    ones_count_ = 0;
+                    continue;
+                }
+                ones_count_ = 0;
+            }
             accumulate_bit(bit);
         }
     }
@@ -78,8 +75,6 @@ void Reader::finish_frame() {
                       << std::setw(4) << calculated_crc << "\n";
             std::cout << "Recieved CRC: " << std::uppercase << std::hex
                       << std::setw(4) << recieved_crc << "\n";
-            // std::printf("Calculated CRC: %04X\n", calculated_crc);
-            // std::printf("Received CRC: %04X\n", recieved_crc);
         }
     }
     current_frame_.clear();
@@ -89,6 +84,7 @@ void Reader::handle_abort() {
     current_frame_.clear();
     in_frame_ = false;
     reset_frame_state();
+    ones_count_ = 0;
 }
 
 void Reader::handle_flag() {
@@ -97,6 +93,7 @@ void Reader::handle_flag() {
         reset_frame_state();
     }
     in_frame_ = true;
+    ones_count_ = 0;
 
     frame_start_byte_index_ =
         file_byte_index_ - bit_reader_.RemainingBytesInBuffer();
@@ -119,5 +116,15 @@ void Reader::reset_frame_state() {
 
 /* pushing terminal sequence */
 Reader::~Reader() { FrameQueue::getInstance().push({}); }
+
+/* helper function */
+void Reader::dump_hex(const frame_t& data) {
+    std::printf("bytes: %zu\n", data.size());
+
+    for (const auto& byte : data) {
+        std::printf("%02X ", byte);
+    }
+    std::printf("\n");
+}
 
 }  // namespace hdlc_parser
