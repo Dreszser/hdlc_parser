@@ -8,7 +8,7 @@
 
 namespace hdlc_parser {
 
-Reader::Reader(uint32_t chunk_size) : chunk_size_(chunk_size), bit_reader_() {}
+Reader::Reader(size_t chunk_size) : chunk_size_(chunk_size), bit_reader_() {}
 
 Reader::ReadResult Reader::read(const char* filename) {
     std::ifstream file(filename, std::ios::binary);

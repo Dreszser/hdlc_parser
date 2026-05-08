@@ -10,7 +10,7 @@ class Reader {
    public:
     enum class ReadResult { Success, FileNotFound, ReadError };
 
-    Reader(uint32_t chunk_size = 1024);
+    Reader(size_t chunk_size = 1024);
 
     ReadResult read(const char* filename);
 
@@ -33,7 +33,7 @@ class Reader {
     void reverse_bits_in_frame(frame_t& frame);
 
     frame_t current_frame_;
-    uint32_t chunk_size_;
+    size_t chunk_size_;
 
     BitReader bit_reader_;
 

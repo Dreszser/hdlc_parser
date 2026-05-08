@@ -11,7 +11,7 @@
 
 namespace hdlc_parser {
 
-void reader_cb(const std::string& filename, uint32_t chunk_size) {
+void reader_cb(const std::string& filename, size_t chunk_size) {
     Reader reader(chunk_size);
     reader.read(filename.data());
 }
