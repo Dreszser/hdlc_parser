@@ -1,9 +1,8 @@
 build
-hdlc_test.bit
 aboba
 .vscode
-output.bin
-output.pcap
-output.sig
-out.pcap
-test_1.bit
+
+*.bin
+*.pcap
+*.sig
+*.bit

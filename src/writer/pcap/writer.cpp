@@ -30,7 +30,7 @@ void PcapWriter::write_frame(const frame_t& frame) {
     ph.incl_len = frame.size() - 2;
     ph.orig_len = frame.size() - 2;
 
-    file_.write(reinterpret_cast<char*>(&ph), sizeof(ph));
+    file_.write(reinterpret_cast<const char*>(&ph), sizeof(ph));
     file_.write(reinterpret_cast<const char*>(frame.data()), frame.size() - 2);
 }
 
