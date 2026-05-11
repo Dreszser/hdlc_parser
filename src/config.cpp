@@ -69,7 +69,11 @@ Config parse_args(int argc, char** argv) {
         std::string arg = argv[i];
 
         if (arg == "--input-file") {
-            get_value(argc, argv, i, arg, cfg.input_file);
+            if (cfg.input_file.empty()) {
+                get_value(argc, argv, i, arg, cfg.input_file);
+            } else {
+                throw std::runtime_error("Input file already declared");
+            }
         } else if (arg == "--output-sig") {
             if (cfg.output_file_sig.empty()) {
                 get_value(argc, argv, i, arg, cfg.output_file_sig);
@@ -83,9 +87,13 @@ Config parse_args(int argc, char** argv) {
                 throw std::runtime_error("PCAP output file already declared");
             }
         } else if (arg == "--read-chunk-size") {
-            std::string val;
-            get_value(argc, argv, i, arg, val);
-            cfg.read_chunk_size = parse_size(val);
+            if (cfg.read_chunk_size == 0) {
+                std::string val;
+                get_value(argc, argv, i, arg, val);
+                cfg.read_chunk_size = parse_size(val);
+            } else {
+                throw std::runtime_error("Read chunk size already declared");
+            }
         } else {
             throw std::runtime_error("Unknown argument: " + arg);
         }

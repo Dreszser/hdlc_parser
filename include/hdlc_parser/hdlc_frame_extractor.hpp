@@ -26,9 +26,6 @@ class HdlcFrameExtractor {
     void HandleFlag();
     void AccumulateBit(uint8_t bit);
 
-    void log_mismatch_crc_frame(const uint16_t& calculated_crc,
-                                const uint16_t& recieved_crc);
-
     frame_t current_frame_;
     size_t chunk_size_;
 
@@ -49,9 +46,6 @@ class HdlcFrameExtractor {
     uint8_t shift_ = 0;
 
     size_t total_valid_frames_count_ = 0;
-
-    /* debug helper */
-    void dump_hex(const frame_t& data);
 };
 
 }  // namespace hdlc_parser

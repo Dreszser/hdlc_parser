@@ -3,9 +3,7 @@
 #include <hdlc_parser/queue.hpp>
 #include <hdlc_parser/utility/bit_operations.hpp>
 #include <hdlc_parser/utility/crc_calculator.hpp>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
+#include <hdlc_parser/utility/hdlc_logger.hpp>
 
 namespace hdlc_parser {
 
@@ -16,12 +14,17 @@ HdlcFrameExtractor::ReadResult HdlcFrameExtractor::ReadFromFile(
     const char* filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
-        std::cout << "Error opening input file: " << filename;
+        HdlcLogger::LogMessage(
+            "Error: ", "Failed to open input file: ", filename);
         return ReadResult::FileNotFound;
     }
     std::vector<char> buffer(chunk_size_);
-    while (file.read(buffer.data(), chunk_size_)) {
-        size_t n = file.gcount();
+    while (true) {
+        file.read(buffer.data(), buffer.size());
+        std::streamsize n = file.gcount();
+        if (n == 0) {
+            break;
+        }
         bit_reader_.SetBuffer(buffer.data(), n);
         file_byte_index_ += n;
         ParseBitChunk();
@@ -29,8 +32,8 @@ HdlcFrameExtractor::ReadResult HdlcFrameExtractor::ReadFromFile(
     if (valid_frames_.size() > 0) {
         FrameQueue::GetInstance().push(std::move(valid_frames_));
     }
-    std::cout << "Total valid frames parsed from " << filename << ": "
-              << total_valid_frames_count_;
+    HdlcLogger::LogMessage("Total valid frames parsed from ", filename, ": ",
+                           total_valid_frames_count_);
     return ReadResult::Success;
 }
 
@@ -77,22 +80,11 @@ void HdlcFrameExtractor::FinishFrame() {
                 valid_frames_.clear();
             }
         } else {
-            log_mismatch_crc_frame(calculated_crc, recieved_crc);
+            HdlcLogger::LogCrcMismatch(calculated_crc, recieved_crc,
+                                       frame_start_byte_index_);
         }
     }
     current_frame_.clear();
-}
-
-void HdlcFrameExtractor::log_mismatch_crc_frame(const uint16_t& calculated_crc,
-                                                const uint16_t& recieved_crc) {
-    std::stringstream ss;
-    ss << "CRC mismatch in frame from byte " << std::setw(4)
-       << std::setfill('0') << std::hex << frame_start_byte_index_
-       << "\nCalculated CRC: " << std::setw(4) << std::setfill('0') << std::hex
-       << calculated_crc << "\nRecieved CRC: " << std::setw(4)
-       << std::setfill('0') << std::hex << recieved_crc << "\n";
-
-    std::cout << ss.str();
 }
 
 void HdlcFrameExtractor::HandleAbortSequence() {
@@ -132,16 +124,6 @@ void HdlcFrameExtractor::ResetFrameState() {
 /* pushing terminal sequence */
 HdlcFrameExtractor::~HdlcFrameExtractor() {
     FrameQueue::GetInstance().push({});
-}
-
-/* helper function */
-void HdlcFrameExtractor::dump_hex(const frame_t& data) {
-    std::printf("bytes: %zu\n", data.size());
-
-    for (const auto& byte : data) {
-        std::printf("%02X ", byte);
-    }
-    std::printf("\n");
 }
 
 }  // namespace hdlc_parser

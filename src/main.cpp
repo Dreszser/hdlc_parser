@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     auto start = high_resolution_clock::now();
     app.Start(cfg);
     auto stop = high_resolution_clock::now();
-    std::cout << "\n\n----- Execution ended -----------" << std::endl;
+    std::cout << "\n----- Execution ended -----------" << std::endl;
 
     auto duration = duration_cast<milliseconds>(stop - start);
 
