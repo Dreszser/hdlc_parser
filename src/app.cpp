@@ -1,8 +1,8 @@
 #include <hdlc_parser/app.hpp>
 #include <hdlc_parser/hdlc_frame_extractor.hpp>
 #include <hdlc_parser/queue.hpp>
-#include <hdlc_parser/writer/pcap/writer.hpp>
-#include <hdlc_parser/writer/sig/writer.hpp>
+#include <hdlc_parser/writer/pcap/pcap_writer.hpp>
+#include <hdlc_parser/writer/sig/sig_writer.hpp>
 #include <iostream>
 #include <memory>
 #include <thread>

@@ -1,5 +1,5 @@
 #include <fstream>
-#include <hdlc_parser/writer/sig/writer.hpp>
+#include <hdlc_parser/writer/sig/sig_writer.hpp>
 
 namespace hdlc_parser {
 
