@@ -12,10 +12,11 @@ add_executable(${PROJECT_NAME}
     src/app.cpp
     src/bit_reader.cpp
     src/hdlc_frame_extractor.cpp
-    src/writer/sig/writer.cpp
-    src/writer/pcap/writer.cpp
+    src/writer/sig/sig_writer.cpp
+    src/writer/pcap/pcap_writer.cpp
     src/utility/crc_calculator.cpp
     src/utility/bit_operations.cpp
+    src/utility/hdlc_logger.cpp
     src/queue.cpp
     src/config.cpp
 )
