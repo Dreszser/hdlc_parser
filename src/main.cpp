@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 
     std::cout << "\n----- Execution started ---------\n" << std::endl;
     auto start = high_resolution_clock::now();
-    app.start(cfg);
+    app.Start(cfg);
     auto stop = high_resolution_clock::now();
     std::cout << "\n\n----- Execution ended -----------" << std::endl;
 

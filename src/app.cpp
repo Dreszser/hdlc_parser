@@ -1,7 +1,6 @@
 #include <hdlc_parser/app.hpp>
 #include <hdlc_parser/hdlc_frame_extractor.hpp>
 #include <hdlc_parser/queue.hpp>
-#include <hdlc_parser/utility/crc_calculator.hpp>
 #include <hdlc_parser/writer/pcap/writer.hpp>
 #include <hdlc_parser/writer/sig/writer.hpp>
 #include <iostream>
@@ -68,7 +67,7 @@ void writer_cb(const Config& cfg) {
 
     while (true) {
         frames_t frames;
-        if (!FrameQueue::getInstance().pop(frames)) {
+        if (!FrameQueue::GetInstance().pop(frames)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
         }
@@ -83,8 +82,7 @@ void writer_cb(const Config& cfg) {
     }
 }
 
-void App::start(const Config& config) {
-    CRCalculator::init();
+void App::Start(const Config& config) {
     std::thread frame_extractor_thread(frame_extractor_cb, config.input_file,
                                        config.read_chunk_size);
 

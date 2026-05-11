@@ -4,6 +4,6 @@
 namespace hdlc_parser {
 class App {
    public:
-    void start(const Config& pcfg);
+    void Start(const Config& pcfg);
 };
 }  // namespace hdlc_parser

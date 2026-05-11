@@ -19,12 +19,12 @@ class HdlcFrameExtractor {
    private:
     void ParseBitChunk();
 
-    void finish_frame();
-    void reset_frame_state();
+    void FinishFrame();
+    void ResetFrameState();
 
-    void handle_abort();
-    void handle_flag();
-    void accumulate_bit(uint8_t bit);
+    void HandleAbortSequence();
+    void HandleFlag();
+    void AccumulateBit(uint8_t bit);
 
     void log_mismatch_crc_frame(const uint16_t& calculated_crc,
                                 const uint16_t& recieved_crc);

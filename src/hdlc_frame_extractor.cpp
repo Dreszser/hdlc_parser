@@ -1,8 +1,8 @@
 #include <fstream>
-#include <hdlc_parser/queue.hpp>
 #include <hdlc_parser/hdlc_frame_extractor.hpp>
-#include <hdlc_parser/utility/crc_calculator.hpp>
+#include <hdlc_parser/queue.hpp>
 #include <hdlc_parser/utility/bit_operations.hpp>
+#include <hdlc_parser/utility/crc_calculator.hpp>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -27,7 +27,7 @@ HdlcFrameExtractor::ReadResult HdlcFrameExtractor::ReadFromFile(
         ParseBitChunk();
     }
     if (valid_frames_.size() > 0) {
-        FrameQueue::getInstance().push(std::move(valid_frames_));
+        FrameQueue::GetInstance().push(std::move(valid_frames_));
     }
     std::cout << "Total valid frames parsed from " << filename << ": "
               << total_valid_frames_count_;
@@ -41,9 +41,9 @@ void HdlcFrameExtractor::ParseBitChunk() {
         shift_ = (shift_ << 1) | bit;
 
         if (in_frame_ && ones_count_ > 6) {
-            handle_abort();
+            HandleAbortSequence();
         } else if (shift_ == 0x7E) {
-            handle_flag();
+            HandleFlag();
         } else if (in_frame_) {
             if (bit == 1) {
                 ones_count_++;
@@ -54,26 +54,26 @@ void HdlcFrameExtractor::ParseBitChunk() {
                 }
                 ones_count_ = 0;
             }
-            accumulate_bit(bit);
+            AccumulateBit(bit);
         }
     }
 }
 
-void HdlcFrameExtractor::finish_frame() {
+void HdlcFrameExtractor::FinishFrame() {
     if (current_frame_.size() >= 4) {
         uint16_t recieved_crc =
             (static_cast<uint16_t>(current_frame_[current_frame_.size() - 2])
              << 8) |
             current_frame_[current_frame_.size() - 1];
-        uint16_t calculated_crc = CRCalculator::calculate(
+        uint16_t calculated_crc = CRCalculator::Calculate(
             current_frame_.data(), current_frame_.size() - 2);
 
         if (recieved_crc == calculated_crc) {
             ++total_valid_frames_count_;
-            BitOperations::reverse_bits_in_frame(current_frame_);
+            BitOperations::ReverseBitsInFrame(current_frame_);
             valid_frames_.push_back(std::move(current_frame_));
             if (valid_frames_.size() == FRAMES_TO_PUSH_COUNT) {
-                FrameQueue::getInstance().push(std::move(valid_frames_));
+                FrameQueue::GetInstance().push(std::move(valid_frames_));
                 valid_frames_.clear();
             }
         } else {
@@ -95,17 +95,17 @@ void HdlcFrameExtractor::log_mismatch_crc_frame(const uint16_t& calculated_crc,
     std::cout << ss.str();
 }
 
-void HdlcFrameExtractor::handle_abort() {
+void HdlcFrameExtractor::HandleAbortSequence() {
     current_frame_.clear();
     in_frame_ = false;
-    reset_frame_state();
+    ResetFrameState();
     ones_count_ = 0;
 }
 
-void HdlcFrameExtractor::handle_flag() {
+void HdlcFrameExtractor::HandleFlag() {
     if (in_frame_) {
-        finish_frame();
-        reset_frame_state();
+        FinishFrame();
+        ResetFrameState();
     }
     in_frame_ = true;
     ones_count_ = 0;
@@ -114,24 +114,24 @@ void HdlcFrameExtractor::handle_flag() {
         file_byte_index_ - bit_reader_.RemainingBytesInBuffer();
 }
 
-void HdlcFrameExtractor::accumulate_bit(uint8_t bit) {
+void HdlcFrameExtractor::AccumulateBit(uint8_t bit) {
     current_byte_ = (current_byte_ << 1) | bit;
     bit_count_++;
 
     if (bit_count_ == 8) {
         current_frame_.push_back(current_byte_);
-        reset_frame_state();
+        ResetFrameState();
     }
 }
 
-void HdlcFrameExtractor::reset_frame_state() {
+void HdlcFrameExtractor::ResetFrameState() {
     bit_count_ = 0;
     current_byte_ = 0;
 }
 
 /* pushing terminal sequence */
 HdlcFrameExtractor::~HdlcFrameExtractor() {
-    FrameQueue::getInstance().push({});
+    FrameQueue::GetInstance().push({});
 }
 
 /* helper function */

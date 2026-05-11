@@ -8,7 +8,7 @@ class Singleton {
     Singleton(const Singleton&) = delete;
     Singleton& operator=(const Singleton&) = delete;
 
-    static T& getInstance() {
+    static T& GetInstance() {
         static T instance;
         return instance;
     }

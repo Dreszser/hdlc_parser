@@ -13,8 +13,8 @@ class PcapWriter : public Writer {
     bool is_open() const;
 
    private:
-    void write_global_header();
-    void write_frame(const frame_t& frame);
+    void WriteglobalHeader();
+    void WriteFrame(const frame_t& frame);
 
     std::ofstream file_;
 };
