@@ -1,16 +1,19 @@
 #include <fstream>
 #include <hdlc_parser/queue.hpp>
-#include <hdlc_parser/reader.hpp>
+#include <hdlc_parser/hdlc_frame_extractor.hpp>
 #include <hdlc_parser/utility/crc_calculator.hpp>
+#include <hdlc_parser/utility/bit_operations.hpp>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
 namespace hdlc_parser {
 
-Reader::Reader(size_t chunk_size) : chunk_size_(chunk_size), bit_reader_() {}
+HdlcFrameExtractor::HdlcFrameExtractor(size_t chunk_size)
+    : chunk_size_(chunk_size), bit_reader_() {}
 
-Reader::ReadResult Reader::read(const char* filename) {
+HdlcFrameExtractor::ReadResult HdlcFrameExtractor::ReadFromFile(
+    const char* filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         std::cout << "Error opening input file: " << filename;
@@ -21,7 +24,7 @@ Reader::ReadResult Reader::read(const char* filename) {
         size_t n = file.gcount();
         bit_reader_.SetBuffer(buffer.data(), n);
         file_byte_index_ += n;
-        parse_bits();
+        ParseBitChunk();
     }
     if (valid_frames_.size() > 0) {
         FrameQueue::getInstance().push(std::move(valid_frames_));
@@ -31,7 +34,7 @@ Reader::ReadResult Reader::read(const char* filename) {
     return ReadResult::Success;
 }
 
-void Reader::parse_bits() {
+void HdlcFrameExtractor::ParseBitChunk() {
     uint8_t bit;
 
     while (bit_reader_.ReadBit(bit)) {
@@ -56,7 +59,7 @@ void Reader::parse_bits() {
     }
 }
 
-void Reader::finish_frame() {
+void HdlcFrameExtractor::finish_frame() {
     if (current_frame_.size() >= 4) {
         uint16_t recieved_crc =
             (static_cast<uint16_t>(current_frame_[current_frame_.size() - 2])
@@ -67,7 +70,7 @@ void Reader::finish_frame() {
 
         if (recieved_crc == calculated_crc) {
             ++total_valid_frames_count_;
-            reverse_bits_in_frame(current_frame_);
+            BitOperations::reverse_bits_in_frame(current_frame_);
             valid_frames_.push_back(std::move(current_frame_));
             if (valid_frames_.size() == FRAMES_TO_PUSH_COUNT) {
                 FrameQueue::getInstance().push(std::move(valid_frames_));
@@ -80,8 +83,8 @@ void Reader::finish_frame() {
     current_frame_.clear();
 }
 
-void Reader::log_mismatch_crc_frame(const uint16_t& calculated_crc,
-                                    const uint16_t& recieved_crc) {
+void HdlcFrameExtractor::log_mismatch_crc_frame(const uint16_t& calculated_crc,
+                                                const uint16_t& recieved_crc) {
     std::stringstream ss;
     ss << "CRC mismatch in frame from byte " << std::setw(4)
        << std::setfill('0') << std::hex << frame_start_byte_index_
@@ -92,14 +95,14 @@ void Reader::log_mismatch_crc_frame(const uint16_t& calculated_crc,
     std::cout << ss.str();
 }
 
-void Reader::handle_abort() {
+void HdlcFrameExtractor::handle_abort() {
     current_frame_.clear();
     in_frame_ = false;
     reset_frame_state();
     ones_count_ = 0;
 }
 
-void Reader::handle_flag() {
+void HdlcFrameExtractor::handle_flag() {
     if (in_frame_) {
         finish_frame();
         reset_frame_state();
@@ -111,7 +114,7 @@ void Reader::handle_flag() {
         file_byte_index_ - bit_reader_.RemainingBytesInBuffer();
 }
 
-void Reader::accumulate_bit(uint8_t bit) {
+void HdlcFrameExtractor::accumulate_bit(uint8_t bit) {
     current_byte_ = (current_byte_ << 1) | bit;
     bit_count_++;
 
@@ -121,29 +124,18 @@ void Reader::accumulate_bit(uint8_t bit) {
     }
 }
 
-void Reader::reset_frame_state() {
+void HdlcFrameExtractor::reset_frame_state() {
     bit_count_ = 0;
     current_byte_ = 0;
 }
 
-inline uint8_t Reader::reverse_bits(uint8_t b) {
-    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
-    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
-    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
-    return b;
-}
-
-void Reader::reverse_bits_in_frame(frame_t& frame) {
-    for (auto& b : frame) {
-        b = reverse_bits(b);
-    }
-}
-
 /* pushing terminal sequence */
-Reader::~Reader() { FrameQueue::getInstance().push({}); }
+HdlcFrameExtractor::~HdlcFrameExtractor() {
+    FrameQueue::getInstance().push({});
+}
 
 /* helper function */
-void Reader::dump_hex(const frame_t& data) {
+void HdlcFrameExtractor::dump_hex(const frame_t& data) {
     std::printf("bytes: %zu\n", data.size());
 
     for (const auto& byte : data) {

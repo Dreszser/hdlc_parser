@@ -1,6 +1,6 @@
 #include <hdlc_parser/app.hpp>
+#include <hdlc_parser/hdlc_frame_extractor.hpp>
 #include <hdlc_parser/queue.hpp>
-#include <hdlc_parser/reader.hpp>
 #include <hdlc_parser/utility/crc_calculator.hpp>
 #include <hdlc_parser/writer/pcap/writer.hpp>
 #include <hdlc_parser/writer/sig/writer.hpp>
@@ -11,9 +11,9 @@
 
 namespace hdlc_parser {
 
-void reader_cb(const std::string& filename, size_t chunk_size) {
-    Reader reader(chunk_size);
-    reader.read(filename.data());
+void frame_extractor_cb(const std::string& filename, size_t chunk_size) {
+    HdlcFrameExtractor frame_extractor(chunk_size);
+    frame_extractor.ReadFromFile(filename.data());
 }
 
 void writer_cb(const Config& cfg) {
@@ -85,12 +85,12 @@ void writer_cb(const Config& cfg) {
 
 void App::start(const Config& config) {
     CRCalculator::init();
-    std::thread reader_thread(reader_cb, config.input_file,
-                              config.read_chunk_size);
+    std::thread frame_extractor_thread(frame_extractor_cb, config.input_file,
+                                       config.read_chunk_size);
 
     std::thread writer_thread(writer_cb, config);
 
-    reader_thread.join();
+    frame_extractor_thread.join();
     writer_thread.join();
 }
 }  // namespace hdlc_parser
