@@ -121,9 +121,8 @@ void HdlcFrameExtractor::ResetFrameState() {
     current_byte_ = 0;
 }
 
-/* pushing terminal sequence */
 HdlcFrameExtractor::~HdlcFrameExtractor() {
-    FrameQueue::GetInstance().push({});
+    FrameQueue::GetInstance().notify_done();
 }
 
 }  // namespace hdlc_parser

@@ -2,7 +2,7 @@
 
 namespace hdlc_parser {
 
-inline uint8_t BitOperations::ReversebitsInByte(uint8_t b) {
+inline uint8_t BitOperations::ReverseBitsInByte(uint8_t b) {
     b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
     b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
     b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
@@ -11,7 +11,7 @@ inline uint8_t BitOperations::ReversebitsInByte(uint8_t b) {
 
 void BitOperations::ReverseBitsInFrame(frame_t& frame) {
     for (auto& b : frame) {
-        b = ReversebitsInByte(b);
+        b = ReverseBitsInByte(b);
     }
 }
 

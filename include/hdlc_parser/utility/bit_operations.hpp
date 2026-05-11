@@ -6,7 +6,7 @@ namespace hdlc_parser {
 
 class BitOperations {
    public:
-    static inline uint8_t ReversebitsInByte(uint8_t b);
+    static inline uint8_t ReverseBitsInByte(uint8_t b);
     static void ReverseBitsInFrame(frame_t& frame);
 };
 

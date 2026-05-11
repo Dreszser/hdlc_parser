@@ -6,3 +6,4 @@ aboba
 *.pcap
 *.sig
 *.bit
+*.out

@@ -19,7 +19,7 @@ class BitReader {
     size_t RemainingBytesInBuffer() const;
 
    private:
-    const char* buffer_;
+    const char* buffer_ = nullptr;
     size_t buffer_size_ = 0;
 
     std::size_t byte_index_ = 0;  // Current byte position
