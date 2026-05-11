@@ -23,8 +23,8 @@ void PcapWriter::WriteFrame(const frame_t& frame) {
                         .count();
     ph.ts_sec = static_cast<uint32_t>(total_us / 1000000);
     ph.ts_usec = static_cast<uint32_t>(total_us % 1000000);
-    ph.incl_len = frame.size() - 2;
-    ph.orig_len = frame.size() - 2;
+    ph.incl_len = static_cast<uint32_t>(frame.size() - 2);
+    ph.orig_len = static_cast<uint32_t>(frame.size() - 2);
 
     file_.write(reinterpret_cast<const char*>(&ph), sizeof(ph));
     file_.write(reinterpret_cast<const char*>(frame.data()), frame.size() - 2);
