@@ -1,11 +1,10 @@
 #include <chrono>
-#include <fstream>
 #include <hdlc_parser/writer/pcap/pcap_header.hpp>
 #include <hdlc_parser/writer/pcap/pcap_writer.hpp>
 
 namespace hdlc_parser {
 
-PcapWriter::PcapWriter(const char* filename)
+PcapWriter::PcapWriter(const std::string& filename)
     : file_(filename, std::ios::binary) {
     WriteglobalHeader();
 }

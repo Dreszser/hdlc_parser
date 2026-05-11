@@ -5,12 +5,12 @@
 namespace hdlc_parser {
 class SigWriter : public Writer {
    public:
-    explicit SigWriter(const char* filename);
+    explicit SigWriter(const std::string& filename);
     void write(const frames_t& frames) override;
 
     ~SigWriter() = default;
 
-    bool is_open() const;
+    bool is_open() const override;
 
    private:
     std::ofstream file_;

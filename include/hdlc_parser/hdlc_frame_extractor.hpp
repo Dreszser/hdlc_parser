@@ -12,7 +12,7 @@ class HdlcFrameExtractor {
 
     HdlcFrameExtractor(size_t chunk_size = 1024);
 
-    ReadResult ReadFromFile(const char* filename);
+    ReadResult ReadFromFile(const std::string& filename);
 
     ~HdlcFrameExtractor();
 

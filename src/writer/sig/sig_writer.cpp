@@ -1,9 +1,8 @@
-#include <fstream>
 #include <hdlc_parser/writer/sig/sig_writer.hpp>
 
 namespace hdlc_parser {
 
-SigWriter::SigWriter(const char* filename)
+SigWriter::SigWriter(const std::string& filename)
     : file_(filename, std::ios::binary) {}
 
 void SigWriter::write(const frames_t& frames) {

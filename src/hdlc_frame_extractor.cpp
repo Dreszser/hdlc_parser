@@ -11,7 +11,7 @@ HdlcFrameExtractor::HdlcFrameExtractor(size_t chunk_size)
     : chunk_size_(chunk_size), bit_reader_() {}
 
 HdlcFrameExtractor::ReadResult HdlcFrameExtractor::ReadFromFile(
-    const char* filename) {
+    const std::string& filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         HdlcLogger::LogMessage(

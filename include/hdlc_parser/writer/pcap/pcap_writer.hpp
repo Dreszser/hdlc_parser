@@ -5,12 +5,12 @@
 namespace hdlc_parser {
 class PcapWriter : public Writer {
    public:
-    explicit PcapWriter(const char* filename);
+    explicit PcapWriter(const std::string& filename);
     void write(const frames_t& frames) override;
 
     ~PcapWriter() = default;
 
-    bool is_open() const;
+    bool is_open() const override;
 
    private:
     void WriteglobalHeader();
