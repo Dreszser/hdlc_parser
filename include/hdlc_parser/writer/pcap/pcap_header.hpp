@@ -10,7 +10,7 @@ struct PcapGlobalHeader {
     int32_t thiszone = 0;
     uint32_t sigfigs = 0;
     uint32_t snaplen = 65535;
-    uint32_t network = 1;  
+    uint32_t network = 1;
 };
 
 struct PcapPacketHeader {
